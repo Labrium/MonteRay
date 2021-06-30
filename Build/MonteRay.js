@@ -122,7 +122,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 		camera.updateMatrixWorld();
 
 		//register emissive objects for explicit lighting
-		document.getElementById("sa").innerHTML = "Analyzing scene...";
+		try { document.getElementById("sa").innerHTML = "Analyzing scene..."; } catch (e) { }
 		var lights = [];
 		scene.traverseVisible(function (obj) {
 			try {
@@ -139,7 +139,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 		var ll = lights.length;
 
 		// pre-rendering cycle
-		document.getElementById("sa").innerHTML = "Pre-rendering...";
+		try { document.getElementById("sa").innerHTML = "Pre-rendering..."; } catch (e) { }
 		var toRender = [];
 		var renderedImage = [];
 		var rl = ptr.length;
@@ -415,7 +415,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 								context.putImageData(imagedata2, 0, 0);
 								self.download();
 								if (spp >= parameters.maxSamples) {
-									document.getElementById("sa").innerHTML = "Render Complete";
+									try { document.getElementById("sa").innerHTML = "Render Complete"; } catch (e) { }
 									return;
 								}
 							}
@@ -435,7 +435,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 					if (lngth < 1) {
 						lngth = 1;
 					}
-					document.getElementById("sa").innerHTML = cw + "x" + ch + "<br />" + spp + "spp " + lngth + "ppf " + Math.round(1 / ((tts - ts) / 1000)) + "fps";
+					try { document.getElementById("sa").innerHTML = cw + "x" + ch + "<br />" + spp + "spp " + lngth + "ppf " + Math.round(1 / ((tts - ts) / 1000)) + "fps"; } catch (e) { }
 					ts = performance.now();
 				}
 			} catch (e) { console.log(e); }
