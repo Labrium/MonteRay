@@ -35,7 +35,7 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
 
 # Usage
 
-**NOTE: MonteRay is in the pre-alpha development stage right now.**
+**NOTE: MonteRay is in the alpha development stage right now.**
 
 ## Installation
 
@@ -139,6 +139,7 @@ During the rendering phase MonteRay backward traces each path and averages the s
    - [ ] Bump
    - [ ] Displacement
  - [ ] HDRI (and EXR) Environments
+ - [ ] Background emissive maps and background intensity
  - [ ] Standard materials
    - [x] Diffuse
    - [x] Specular (Mirror)
@@ -150,4 +151,4 @@ During the rendering phase MonteRay backward traces each path and averages the s
  - [ ] Multi-thread support via Web Worker API
  - [ ] Smooth shading
 
-[Three.js]: (threejs.org)
+[Three.js]: (https://threejs.org/)
