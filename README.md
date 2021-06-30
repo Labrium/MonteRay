@@ -1,4 +1,4 @@
-# MonteRay - A [Three.js] pathtracing renderer
+# MonteRay - A [Three.js](https://threejs.org/) pathtracing renderer
 
 Written in 100% ES5 JavaScript using native Three.js classes and objects. This renderer has been created as an alternative to the default Three.js WebGL renderer, and will (at some future time) support most if not all Three.js scenes and materials.
 
@@ -150,5 +150,3 @@ During the rendering phase MonteRay backward traces each path and averages the s
  - [ ] Instancing (`THREE.InstancedMesh`)
  - [ ] Multi-thread support via Web Worker API
  - [ ] Smooth shading
-
-[Three.js]: (https://threejs.org/)
