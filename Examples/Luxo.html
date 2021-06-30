@@ -23,6 +23,7 @@
 	<script src="Scripts/GLTFLoader.js"></script>
 	<script src="../Build/MonteRay.js"></script>
 	<script>
+
 		var hash = location.hash ? location.hash.substring(1) : '50';
 
 		var WORKERS = + hash || navigator.hardwareConcurrency || 3;
@@ -257,7 +258,8 @@
 			renderer = new MonteRay.PathtracingRenderer({
 				alpha: true,
 				//fps: 1,
-				pixelBatchSize: 10000,
+				pixelBatchSize: 1000,
+				//BVHAcceleration: false,
 				//downloadInterval: 1,
 				//maxSamples: 20,
 				//advancedLighting: true,

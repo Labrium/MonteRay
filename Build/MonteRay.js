@@ -67,7 +67,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 	this.clear = function () {
 
 	};
-	if (parameters.BVHAcceleration && parameters.BVHAcceleration == false) {
+	if (!parameters.BVHAcceleration || parameters.BVHAcceleration && parameters.BVHAcceleration != false) {
 		THREE.BufferGeometry.prototype.computeBoundsTree = MeshBVHLib.computeBoundsTree;
 		THREE.BufferGeometry.prototype.disposeBoundsTree = MeshBVHLib.disposeBoundsTree;
 		THREE.Mesh.prototype.raycast = MeshBVHLib.acceleratedRaycast;
@@ -94,10 +94,10 @@ MonteRay.PathtracingRenderer = function (parameters) {
 	}
 	var lngth = 1;
 	this.render = function (scene, camera) {
-		cw = canvasWidth;
-		ch = canvasHeight;
-		chw = canvasHalfWidth;
-		chh = canvasHalfHeight;
+		var cw = canvasWidth;
+		var ch = canvasHeight;
+		var chw = canvasHalfWidth;
+		var chh = canvasHalfHeight;
 		canvas.width = cw;
 		canvas.height = ch;
 
@@ -126,7 +126,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 		var lights = [];
 		scene.traverseVisible(function (obj) {
 			try {
-				if (parameters.BVHAcceleration && parameters.BVHAcceleration == false) {
+				if (!parameters.BVHAcceleration || parameters.BVHAcceleration && parameters.BVHAcceleration != false) {
 					if (obj instanceof THREE.Mesh == true) {
 						obj.geometry.computeBoundsTree();
 					}
@@ -147,7 +147,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 			var outputColor = new THREE.Color(0x000000);
 			var pixelcast = ptr[j];
 			eye.setFromCamera(pixelcast, camera);
-			intersect = eye.intersectObjects(scene.children, true)[0];
+			var intersect = eye.intersectObjects(scene.children, true)[0];
 			var opacity = 1;
 			if (intersect == undefined) {
 				outputColor.add(scene.background);
@@ -445,4 +445,6 @@ MonteRay.PathtracingRenderer = function (parameters) {
 	}
 
 };
-//evar PathtracingRenderer = MonteRay.PathtracingRenderer; export { PathtracingRenderer };
+
+//esm var PathtracingRenderer = MonteRay.PathtracingRenderer;
+//esm export { PathtracingRenderer };
