@@ -379,6 +379,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 		var ts = 0;
 		var self = this;
 		//var ping = 0;
+		try { document.getElementById("sa").innerHTML = cw + "x" + ch + "<br />" + "Rendering 1 sample per pixel..."; } catch (e) { }
 		function renderPixel() {
 			try {
 				for (var q = 0; q < lngth; q++) {
@@ -427,6 +428,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 							}
 						}
 						spp++;
+						try { document.getElementById("sa").innerHTML = cw + "x" + ch + "<br />" + "Rendering " + spp + " samples per pixel..."; } catch (e) { }
 					}
 				}
 				var imagedata2 = new ImageData(new Uint8ClampedArray(renderedImage), cw, ch);
