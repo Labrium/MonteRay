@@ -5,7 +5,7 @@
  * WebGL renderer, and will (at some future time) support most if not all
  * Three.js scenes and materials.
  * 
- * Licensed under GPLv3 (https://techlabsinc.github.io/MonteRay/LICENSE)
+ * https://techlabsinc.github.io/MonteRay/LICENSE
  * 
  * @author TechLabsInc / http://github.com/TechLabsInc
  */
