@@ -13,7 +13,7 @@ var MonteRay = MonteRay || {};
 MonteRay.PathtracingRenderer = function (parameters) {
 
 	this.VERSION = "1.0 alpha";
-	this.EPSILON = 0.00001;
+	var EPSILON = 0.00001;
 
 	parameters = parameters || {};
 
