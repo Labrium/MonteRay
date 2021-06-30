@@ -76,6 +76,7 @@ see [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
 
  * Diffuse
  * Mirror
+ * Refractive
  * ... Other materials coming soon!
 
 `MonteRay.CustomMaterial` (allowing for volumetric meshes like water, fog and clouds) coming soon!
@@ -99,7 +100,7 @@ Needless to say, I decided to take it upon myself to create a fully-functional T
 
 (basically as integrated with Three.js as possible)
 
-I spent weeks learning path tracing and the best practices for path tracing, and finally–after no less than 467 failed test renders, reading through the source code of every path tracer and pdf I could find on the internet (including [montelight-cpp](https://github.com/Smerity/montelight-cpp) by [Smerity](https://github.com/Smerity))–I came up with something acceptable to share with the world.
+I spent weeks learning path tracing and the best practices for path tracing, and finally–after no less than 467 failed test renders, reading through the source code of every path tracer and pdf I could find on the internet (including [montelight-cpp](https://github.com/Smerity/montelight-cpp) by [Smerity](https://github.com/Smerity))–I came up with something acceptable to publish on github.
 
 &nbsp;
 
