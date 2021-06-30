@@ -113,7 +113,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 		var pixSize = new THREE.Vector2(1 / cw, 1 / ch);
 		for (var y = 0; y < ch; y++) {
 			for (var x = 0; x < cw; x++) {
-				ptr.push(new THREE.Vector2(((x / cw) * 2 - 1), (-(y / ch) * 2 + 1)));
+				ptr.push(new THREE.Vector2((((x+0.5) / cw) * 2 - 1), (-((y+0.5) / ch) * 2 + 1)));
 			}
 		}
 
@@ -165,10 +165,16 @@ MonteRay.PathtracingRenderer = function (parameters) {
 					} else {
 						outputColor.setScalar(intersect.distance / camera.far);
 						toRender.push([pixelcast, intersect, 2, new THREE.Color(0x000000), j * 4]);
+						if (parameters.alpha) {
+							opacity = 0;
+						}
 					}
 				} catch (e) {
 					outputColor.setScalar(intersect.distance / camera.far);
 					toRender.push([pixelcast, intersect, 2, new THREE.Color(0x000000), j * 4]);
+					if (parameters.alpha) {
+						opacity = 0;
+					}
 				}
 			}
 			renderedImage.push(outputColor.r * 255);

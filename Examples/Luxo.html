@@ -14,7 +14,7 @@
 		MonteRay - A <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> pathtracing renderer - <a href="https://github.com/TechLabsInc/MonteRay">Source</a>
 		<!--(using <span id="workers"></span>
 		<button id="removeWorker">-</button><button id="addWorker">+</button> web workers)--><br />
-		<button id="rearrange">Rearrange</button><button id="render">Render</button><button id="renderGL">WebGL Render</button><button id="download">Download</button><br />
+		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Download</button><br />
 		<span id="sa">Ready</span>
 	</div>
 	<script src="../Lib/three.js"></script>
@@ -222,9 +222,6 @@
 
 		function init() {
 
-			var buttonRearrange = document.getElementById('rearrange');
-			buttonRearrange.addEventListener('click', rearrange);
-
 			var buttonRender = document.getElementById('render');
 			buttonRender.addEventListener('click', function () {
 				//numFrames = Number(prompt("How many frames?"));
@@ -263,11 +260,10 @@
 				//downloadInterval: 1,
 				//maxSamples: 20,
 				//advancedLighting: true,
-				//recursiveLighting: false,
+				//recursiveLighting: true,
 				//lightSamples: 10,
 				nextFrame: function () {
 					if (numFrames-- > 1) {
-						rearrange();
 						render();
 					}
 				}
@@ -317,18 +313,6 @@
 
 			var labelWorkers = document.getElementById('workers');
 			labelWorkers.textContent = WORKERS;
-
-		}
-
-		function rearrange() {
-
-			group.children.forEach(function (o) {
-
-				o.position.y += 1;
-				o.position.x += 1;
-				o.position.z += 1;
-
-			});
 
 		}
 
