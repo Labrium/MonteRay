@@ -28,8 +28,11 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
 &nbsp;
 
 # Examples
- - [Cornell Box](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html)
+
+![Luxo Jr rendered with MonteRay](Images/Luxo.png)
+
  - [Luxo Jr](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html)
+ - [Cornell Box](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html)
 
 &nbsp;
 
