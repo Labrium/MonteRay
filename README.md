@@ -32,6 +32,7 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
 ![Luxo Jr rendered with MonteRay](Images/Luxo.png)
 
  - [Luxo Jr](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html)
+ - [Lighting McQueen](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html)
  - [Cornell Box](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html)
 
 &nbsp;

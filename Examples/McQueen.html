@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>MonteRay - A Three.js pathtracing renderer - McQueen</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="../Styles/main.css">
+</head>
+
+<body>
+
+	<div id="info">
+		MonteRay - A <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> pathtracing renderer - <a href="https://github.com/TechLabsInc/MonteRay">Source</a>
+		<!--(using <span id="workers"></span>
+		<button id="removeWorker">-</button><button id="addWorker">+</button> web workers)--><br />
+		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Download</button><br />
+		<span id="sa">Ready</span>
+	</div>
+	<script src="../Lib/three.js"></script>
+	<script src="../Lib/MeshBVHLib.js"></script>
+	<script src="../Lib/MeshSurfaceSampler.js"></script>
+	<script src="Scripts/STLLoader.js"></script>
+	<script src="../Build/MonteRay.js"></script>
+	<script>
+
+		var hash = location.hash ? location.hash.substring(1) : '50';
+
+		var WORKERS = + hash || navigator.hardwareConcurrency || 3;
+
+		var camera, scene, renderer, GLRenderer;
+		var group;
+
+		init();
+
+		function initScene(width, height) {
+
+			camera = new THREE.PerspectiveCamera(50, width / height, 1, 100000);
+			camera.position.set(100, 70, 100);
+			camera.lookAt(new THREE.Vector3(0, 10, 0));
+			//camera.rotation.set(0, 0, 0.1);
+
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0xc0e0ff);
+			//scene.background = new THREE.Color(0xffffff);
+
+			// materials
+
+			var phongMaterial = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x111111,
+				shininess: 100,
+				flatShading: false
+			});
+
+			var phongMaterialBox = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x111111,
+				shininess: 100,
+				flatShading: true
+			});
+
+			var phongMaterialBoxLeft = new THREE.MeshPhongMaterial({
+				color: 0xff0000,
+				specular: 0x111111,
+				shininess: 100,
+				flatShading: true
+			});
+
+			var phongMaterialBoxRight = new THREE.MeshPhongMaterial({
+				color: 0x00ff00,
+				specular: 0x111111,
+				shininess: 100,
+				flatShading: true
+			});
+
+			var mirrorMaterialFlat = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0xff8888,
+				shininess: 10000,
+				flatShading: true
+			});
+			mirrorMaterialFlat.mirror = true;
+			mirrorMaterialFlat.reflectivity = 1;
+
+			var mirrorMaterialSmooth = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x222222,
+				shininess: 10000,
+				flatShading: false
+			});
+			mirrorMaterialSmooth.mirror = true;
+			mirrorMaterialSmooth.reflectivity = 1;
+
+			var glassMaterialFlat = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x00ff00,
+				shininess: 10000,
+				flatShading: true
+			});
+			glassMaterialFlat.glass = true;
+			glassMaterialFlat.reflectivity = 0.5;
+
+			var glassMaterialSmooth = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0xffffff,
+				shininess: 10000,
+				flatShading: false,
+				side: THREE.DoubleSide
+			});
+			glassMaterialSmooth.glass = true;
+			glassMaterialSmooth.reflectivity = 0.5;
+			glassMaterialSmooth.refractionRatio = 1;
+
+			var lightMaterial = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				emissive: 0xffffff,
+				emissiveIntensity: 1
+			});
+
+			//
+
+			group = new THREE.Group();
+			scene.add(group);
+
+			// geometries
+
+			var sphereGeometry = new THREE.SphereBufferGeometry(100, 64, 64);
+			var planeGeometry = new THREE.BoxBufferGeometry(600, 5, 600);
+			var boxGeometry = new THREE.BoxBufferGeometry(100, 100, 100);
+
+			// Sphere
+
+			var sphere = new THREE.Mesh(sphereGeometry, phongMaterial);
+			sphere.scale.multiplyScalar(0.5);
+			sphere.position.set(- 50, - 250 + 5, - 50);
+			group.add(sphere);
+
+			var sphere2 = new THREE.Mesh(sphereGeometry, mirrorMaterialSmooth);
+			sphere2.scale.multiplyScalar(0.5);
+			sphere2.position.set(175, - 250 + 5, - 150);
+			//sphere2.position.set(0, 0, - 150);
+			group.add(sphere2);
+
+			// Box
+
+			var box = new THREE.Mesh(boxGeometry, mirrorMaterialFlat);
+			box.position.set(- 175, - 250 + 2.5, - 150);
+			box.rotation.y = 0.5;
+			group.add(box);
+
+			// Glass
+
+			var glass = new THREE.Mesh(sphereGeometry, glassMaterialSmooth);
+			glass.scale.multiplyScalar(0.5);
+			glass.position.set(100, - 240 + 5, - 75);
+			glass.rotation.y = 0.5;
+			group.add(glass);
+
+			// bottom
+
+			var plane = new THREE.Mesh(planeGeometry, phongMaterialBox.clone());
+			//plane.material.mirror = true;
+			plane.position.set(0, - 300 + 2.5, - 300);
+			scene.add(plane);
+
+			// top
+
+			var plane = new THREE.Mesh(planeGeometry, lightMaterial);
+			plane.position.set(0, 300 - 2.5, - 300);
+			scene.add(plane);
+
+			// back
+
+			var plane = new THREE.Mesh(planeGeometry, phongMaterialBox);
+			plane.rotation.x = 1.57;
+			plane.position.set(0, 0, - 300);
+			scene.add(plane);
+
+			/*var plane = new THREE.Mesh( planeGeometry, mirrorMaterialFlatDark );
+			plane.rotation.x = 1.57;
+			plane.position.set( 0, 0, - 300 + 10 );
+			plane.scale.multiplyScalar( 0.85 );
+			scene.add( plane );*/
+
+			// left
+
+			var plane = new THREE.Mesh(planeGeometry, phongMaterialBoxLeft);
+			plane.rotation.z = 1.57;
+			plane.position.set(- 300, 0, - 300);
+			scene.add(plane);
+
+			// right
+
+			var plane = new THREE.Mesh(planeGeometry, phongMaterialBoxRight);
+			plane.rotation.z = 1.57;
+			plane.position.set(300, 0, - 300);
+			scene.add(plane);
+
+			// light
+
+			var plane = new THREE.Mesh(sphereGeometry, lightMaterial.clone());
+			plane.scale.multiplyScalar(0.5);
+			plane.position.set(0, -200, -150);
+			//scene.add(plane);
+
+			new THREE.STLLoader().load("./Mcqueen_Car.STL", function (obj) {
+				scene.children = [];
+				scene.add(new THREE.Mesh(obj, new THREE.MeshLambertMaterial()));
+				scene.children[0].rotation.y = Math.PI;
+				scene.children[0].position.set(40, 0, 80);
+				scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1));
+				var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshLambertMaterial());
+				ground.rotation.x = -Math.PI / 2;
+				ground.position.y = 0;
+				scene.add(ground);
+				var light = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
+					emissive: 0xffffff,
+					emissiveIntensity: 0.6
+				}));
+				light.rotation.x = Math.PI / 2;
+				light.position.y = 500;
+				scene.add(light);
+			});
+
+		}
+
+		function init() {
+
+			var buttonRender = document.getElementById('render');
+			buttonRender.addEventListener('click', function () {
+				//numFrames = Number(prompt("How many frames?"));
+				render();
+			});
+
+			var buttonRender = document.getElementById('renderGL');
+			buttonRender.addEventListener('click', function () {
+				GLRenderer.render(scene, camera);
+			});
+
+			var buttonRender = document.getElementById('download');
+			buttonRender.addEventListener('click', function () {
+				renderer.download();
+			});
+
+			/*var buttonRemoveWorker = document.getElementById('removeWorker');
+			buttonRemoveWorker.addEventListener('click', removeWorker);
+
+			var buttonAddWorker = document.getElementById('addWorker');
+			buttonAddWorker.addEventListener('click', addWorker);
+
+			updateWorkers();*/
+
+			//
+
+			initScene(window.innerWidth, window.innerHeight);
+
+			//
+			var numFrames = 1;
+			renderer = new MonteRay.PathtracingRenderer({
+				alpha: true,
+				//fps: 1,
+				pixelBatchSize: 10000,
+				//BVHAcceleration: false,
+				//downloadInterval: 1,
+				//maxSamples: 20,
+				//advancedLighting: true,
+				//recursiveLighting: true,
+				//lightSamples: 10,
+				nextFrame: function () {
+					if (numFrames-- > 1) {
+						render();
+					}
+				}
+			});
+			renderer.setPixelRatio(2);
+			GLRenderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			GLRenderer.setPixelRatio(2);
+			GLRenderer.setSize(window.innerWidth, window.innerHeight);
+			GLRenderer.domElement.style.position = "absolute";
+			document.body.appendChild(GLRenderer.domElement);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.domElement.style.position = "absolute";
+			document.body.appendChild(renderer.domElement);
+
+
+			/*window.addEventListener('resize', function () {
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				GLRenderer.setSize(window.innerWidth, window.innerHeight);
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+			});*/
+
+		}
+
+		function addWorker() {
+
+			updateWorkers(1);
+
+		}
+
+		function removeWorker() {
+
+			updateWorkers(- 1);
+
+		}
+
+		function updateWorkers(x) {
+
+			if (x) {
+
+				WORKERS = Math.max(1, WORKERS + x);
+				renderer.setWorkers(WORKERS);
+
+			}
+
+			var labelWorkers = document.getElementById('workers');
+			labelWorkers.textContent = WORKERS;
+
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+
+
+	</script>
+
+</body>
+
+</html>
