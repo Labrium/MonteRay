@@ -1,5 +1,5 @@
 /*
- * MonteRay v1.0 alpha Copyright (c) 2021 Tech Labs, Inc.
+ * MonteRay Alpha 1 Copyright (c) 2021 Tech Labs, Inc.
  * 
  * This renderer has been created as an alternative to the default Three.js
  * WebGL renderer, and will (at some future time) support most if not all
@@ -12,12 +12,12 @@
 var MonteRay = MonteRay || {};
 MonteRay.PathtracingRenderer = function (parameters) {
 
-	this.VERSION = "1.0 alpha";
+	this.VERSION = "Alpha 1";
 	var EPSILON = Math.pow(0.1, -52);
 
 	parameters = parameters || {};
 
-	console.log("Rendering provided by MonteRay v" + this.VERSION + " https://techlabsinc.github.io/MonteRay/LICENSE");
+	console.log("Rendering provided by MonteRay " + this.VERSION + " https://techlabsinc.github.io/MonteRay/LICENSE");
 	var canvas;
 	if (parameters.canvas) {
 		canvas = parameters.canvas;
@@ -113,7 +113,7 @@ MonteRay.PathtracingRenderer = function (parameters) {
 		var pixSize = new THREE.Vector2(1 / cw, 1 / ch);
 		for (var y = 0; y < ch; y++) {
 			for (var x = 0; x < cw; x++) {
-				ptr.push(new THREE.Vector2((((x+0.5) / cw) * 2 - 1), (-((y+0.5) / ch) * 2 + 1)));
+				ptr.push(new THREE.Vector2((((x + 0.5) / cw) * 2 - 1), (-((y + 0.5) / ch) * 2 + 1)));
 			}
 		}
 
