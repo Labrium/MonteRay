@@ -205,7 +205,7 @@
 			plane.position.set(0, -200, -150);
 			//scene.add(plane);
 
-			new THREE.GLTFLoader().load("./scene.gltf", function (obj) {
+			new THREE.GLTFLoader().load("./Models/scene.gltf", function (obj) {
 				obj.scenes[0].rotation.y = -Math.PI / 2;
 				scene.children = obj.scenes;
 				scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1));

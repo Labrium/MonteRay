@@ -36,7 +36,7 @@
 		function initScene(width, height) {
 
 			camera = new THREE.PerspectiveCamera(50, width / height, 1, 100000);
-			camera.position.set(100, 70, 100);
+			camera.position.set(120, 70, 120);
 			camera.lookAt(new THREE.Vector3(0, 10, 0));
 			//camera.rotation.set(0, 0, 0.1);
 
@@ -204,23 +204,48 @@
 			plane.position.set(0, -200, -150);
 			//scene.add(plane);
 
-			new THREE.STLLoader().load("./Mcqueen_Car.STL", function (obj) {
+			new THREE.STLLoader().load("./Models/Mcqueen_Car.STL", function (obj) {
 				scene.children = [];
 				scene.add(new THREE.Mesh(obj, new THREE.MeshLambertMaterial()));
 				scene.children[0].rotation.y = Math.PI;
 				scene.children[0].position.set(40, 0, 80);
 				scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1));
-				var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshLambertMaterial());
+				var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500), new THREE.MeshLambertMaterial({ color: 0xaaaaff }));
 				ground.rotation.x = -Math.PI / 2;
 				ground.position.y = 0;
 				scene.add(ground);
-				var light = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
+
+				var bwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({ color: 0xff5555 }));
+				bwall.position.z = -250;
+				scene.add(bwall);
+
+				var rwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({ color: 0xaaffaa }));
+				rwall.rotation.y = Math.PI / 2;
+				rwall.position.z = 0;
+				rwall.position.x = -250;
+				scene.add(rwall);
+
+				var rwall = new THREE.Mesh(new THREE.PlaneBufferGeometry(440, 200), ground.material.clone());
+				rwall.material.mirror = true;
+				rwall.rotation.y = Math.PI / 2;
+				rwall.position.set(-249, 120, 0);
+				scene.add(rwall);
+
+				var lwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({ color: 0xaaffaa }));
+				lwall.rotation.y = -Math.PI / 2;
+				lwall.position.z = 0;
+				lwall.position.x = 250;
+				scene.add(lwall);
+
+				var light = new THREE.Mesh(new THREE.SphereBufferGeometry(10, 8, 6), new THREE.MeshPhongMaterial({
 					emissive: 0xffffff,
-					emissiveIntensity: 0.6
+					emissiveIntensity: 0.4
 				}));
-				light.rotation.x = Math.PI / 2;
-				light.position.y = 500;
+				light.position.set(100, 200, -100);
 				scene.add(light);
+				var l2 = light.clone();
+				light.position.set(-100, 200, 100);
+				scene.add(l2);
 			});
 
 		}
