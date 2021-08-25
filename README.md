@@ -1,12 +1,22 @@
 # MonteRay - A [Three.js](https://threejs.org/) pathtracing renderer
 
+[![Licensed under CC BY-NC-SA 4.0](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey.svg?logo=creativecommons&logoColor=white)](LICENSE)
+[![Minified file size](https://img.shields.io/github/size/TechLabsInc/MonteRay/Build/MonteRay.min.js?label=minified%20size)](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRay.min.js)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/TechLabsInc/MonteRay/master?logo=github)
+![GitHub all releases](https://img.shields.io/github/downloads/TechLabsInc/MonteRay/total?color=success&logo=docusign&logoColor=white)
+
+
+[![three.js r123](https://img.shields.io/badge/three.js-r123-blue?logo=threedotjs)](https://github.com/mrdoob/three.js/releases/tag/r123)
+[![three-mesh-bvh v0.4.0](https://img.shields.io/badge/three--mesh--bvh-v0.4.0-blue)](https://github.com/gkjohnson/three-mesh-bvh/releases/tag/v0.4.0)
+[![MeshSurfaceSampler.js r123](https://img.shields.io/badge/MeshSurfaceSampler.js-r123-blue)](https://github.com/mrdoob/three.js/blob/r123/examples/jsm/math/MeshSurfaceSampler.js)
+
 Written in 100% ES5 JavaScript using native Three.js classes and objects. This renderer has been created as an alternative to the default Three.js WebGL renderer, and will (at some future time) support most if not all Three.js scenes and materials.
 
 [Examples](#examples) — [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
 
 ![Cornell Box rendered with MonteRay](Images/CornellBoxFinalRender.png)
 
-*Tested on Three.js r112, r113, r120dev, r123 and r128.*
+*Tested on Three.js r112, r113, r120dev, r123, r126 and r128.*
 
 **NOTE: MeshBVH accelerated raycasting is only supported on Three.js r123 and later.**
 
@@ -34,6 +44,10 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
  - [Luxo Jr](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html)
  - [Lighting McQueen](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html)
  - [Cornell Box](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html)
+ - [Texures](https://techlabsinc.github.io/MonteRay/Examples/Texures.html)
+ - [Environments](https://techlabsinc.github.io/MonteRay/Examples/HDRI.html)
+
+![Environment maps in MonteRay](Images/Environments.png)
 
 &nbsp;
 
@@ -80,7 +94,7 @@ see [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
 
  * Diffuse
  * Mirror
- * Refractive
+ * Refractive **experimental*
  * ... Other materials coming soon!
 
 `MonteRay.CustomMaterial` (allowing for volumetric meshes like water, fog and clouds) coming soon!
@@ -137,21 +151,34 @@ During the rendering phase MonteRay backward traces each path and averages the s
 
 # TODO
  - [ ] Texture maps
-   - [ ] Diffuse
+   - [x] Diffuse
    - [ ] Emissive
    - [ ] Roughness
    - [ ] Normal
+     - [x] Tangent Space
+     - [ ] Object Space
    - [ ] Bump
    - [ ] Displacement
- - [ ] HDRI (and EXR) Environments
- - [ ] Background emissive maps and background intensity
+ - [ ] Texture wrapping/repeat
+ - [ ] Environment maps
+   - [x] All standard images supported by browser (PNG/JPEG/etc.)
+   - [ ] EXR
+   - [ ] HDRI
+ - [ ] Background emissive maps and background intensity (for non-EXR/HDRI images)
  - [ ] Standard materials
    - [x] Diffuse
    - [x] Specular (Mirror)
    - [ ] Clearcoat (Glossy)
-   - [x] Refractive **partial support*
- - [x] Antialiasing **partial support*
+   - [x] Refractive **experimental*
+ - [x] Antialiasing  **partial support*
  - [ ] Noise reduction (through variance reduction or simple denoising)
- - [ ] Instancing (`THREE.InstancedMesh`)
+ - [ ] Instancing  support (`THREE.InstancedMesh`)
  - [ ] Multi-thread support via Web Worker API
- - [ ] Smooth shading
+ - [x] Smooth shading
+
+&nbsp;
+
+# License
+[MonteRay](https://github.com/TechLabsInc/MonteRay) © 2021 by [Tech Labs Inc.](https://github.com/TechLabsInc) is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0).
+
+[![licensebuttons by-nc-sa](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0)

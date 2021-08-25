@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>MonteRay - A Three.js pathtracing renderer - HDRI Environment Map Demo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="../Styles/main.css">
+</head>
+
+<body>
+
+	<div id="info">
+		MonteRay - A <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> pathtracing renderer - <a href="https://github.com/TechLabsInc/MonteRay">Source</a>
+		<!--(using <span id="workers"></span>
+		<button id="removeWorker">-</button><button id="addWorker">+</button> web workers)--><br />
+		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Download</button>
+		Environment:
+		<select id="env">
+			<option value="hilly_terrain_01_1k.png">Hilly Terrain</option>
+			<option value="kiara_1_dawn_1k.png">Kiara Dawn</option>
+			<option value="snowy_park_01_1k.png">Snowy Park</option>
+			<option value="wide_street_01_1k.png">Wide Street</option>
+			<option value="stone_alley_03_1k.png">Stone Alley</option>
+			<option value="kloppenheim_02_1k.png">Kloppenheim Night</option>
+			<option value="kloppenheim_04_1k.png">Kloppenheim Overcast</option>
+			<option value="lookout_1k.png">Lookout</option>
+			<option value="lebombo_1k.png">Lebombo House</option>
+			<option value="adams_place_bridge_1k.png">Adams Place Bridge</option>
+			<option value="fireplace_1k.png">Fireplace</option>
+		</select>
+		<br />
+		<span id="sa">Ready</span>
+	</div>
+	<script src="../Lib/three.js"></script>
+	<script src="../Lib/MeshBVHLib.js"></script>
+	<script src="../Lib/MeshSurfaceSampler.js"></script>
+	<script src="../Build/MonteRay.js"></script>
+	<script>
+
+		var camera, scene, renderer, GLRenderer;
+
+		init();
+
+		function initScene(width, height) {
+
+			camera = new THREE.PerspectiveCamera(30, width / height, 1, 10000);
+			camera.position.set(-500, 500, 1000);
+			camera.lookAt(new THREE.Vector3(0, 100, 0));
+			//camera.rotation.set(0, 0, 0.1);
+
+			scene = new THREE.Scene();
+			scene.background = new THREE.TextureLoader().load("Environments/PNG/hilly_terrain_01_1k.png");
+			//scene.background = new THREE.Color(0x80b0ff);
+			//scene.background = new THREE.Color(0xffffff);
+
+			// materials
+
+			var phongMaterial = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x111111,
+				shininess: 100,
+				flatShading: false
+			});
+
+			var phongMaterialBox = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x111111,
+				shininess: 100,
+				flatShading: true
+			});
+
+			var mirrorMaterialFlat = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0xff8888,
+				shininess: 10000,
+				flatShading: true
+			});
+			mirrorMaterialFlat.mirror = true;
+			mirrorMaterialFlat.reflectivity = 1;
+
+			var mirrorMaterialSmooth = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x222222,
+				shininess: 10000,
+				flatShading: false
+			});
+			mirrorMaterialSmooth.mirror = true;
+			mirrorMaterialSmooth.reflectivity = 1;
+
+			var glassMaterialFlat = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0x00ff00,
+				shininess: 10000,
+				flatShading: true
+			});
+			glassMaterialFlat.glass = true;
+			glassMaterialFlat.reflectivity = 0.5;
+
+			var glassMaterialSmooth = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				specular: 0xffffff,
+				shininess: 10000,
+				flatShading: false,
+				side: THREE.DoubleSide
+			});
+			glassMaterialSmooth.glass = true;
+			glassMaterialSmooth.reflectivity = 0.5;
+			glassMaterialSmooth.refractionRatio = 1;
+
+			var lightMaterial = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				emissive: 0xffffff,
+				emissiveIntensity: 1
+			});
+
+			//
+
+
+			// geometries
+
+			var sphereGeometry = new THREE.SphereBufferGeometry(100, 32, 16);
+			var planeGeometry = new THREE.PlaneBufferGeometry(3000, 3000);
+			var boxGeometry = new THREE.BoxBufferGeometry(200, 200, 200);
+
+			// Diffuse
+
+			var sphere = new THREE.Mesh(sphereGeometry, phongMaterial);
+			sphere.position.set(-300, 100, 200);
+			scene.add(sphere);
+
+			var sphere = new THREE.Mesh(boxGeometry, phongMaterialBox);
+			sphere.position.set(-300, 100, -200);
+			scene.add(sphere);
+
+			// Mirror
+
+			var sphere = new THREE.Mesh(sphereGeometry, mirrorMaterialSmooth);
+			sphere.position.set(0, 100, 200);
+			scene.add(sphere);
+
+			var sphere = new THREE.Mesh(boxGeometry, mirrorMaterialFlat);
+			sphere.position.set(0, 100, -200);
+			scene.add(sphere);
+
+			// Glass
+
+			var sphere = new THREE.Mesh(sphereGeometry, glassMaterialSmooth);
+			sphere.position.set(300, 100, 200);
+			scene.add(sphere);
+
+			var sphere = new THREE.Mesh(boxGeometry, glassMaterialFlat);
+			sphere.position.set(300, 100, -200);
+			scene.add(sphere);
+
+			// bottom
+
+			var plane = new THREE.Mesh(planeGeometry, phongMaterialBox.clone());
+			var chkr = new THREE.TextureLoader().load("Models/checkerboard.png");
+			chkr.repeat = new THREE.Vector2(10, 10);
+			chkr.wrapT = THREE.RepeatWrapping;
+			chkr.wrapS = THREE.RepeatWrapping;
+			plane.material.map = chkr;
+			plane.rotation.x = -Math.PI / 2;
+			scene.add(plane);
+
+			// light
+
+			var plane = new THREE.Mesh(sphereGeometry, lightMaterial);
+			plane.scale.multiplyScalar(0.5);
+			plane.position.set(0, -200, -150);
+			//scene.add(plane);
+
+			scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1));
+
+		}
+
+		function init() {
+
+			var buttonRender = document.getElementById('render');
+			buttonRender.addEventListener('click', function () {
+				//numFrames = Number(prompt("How many frames?"));
+				render();
+			});
+
+			var buttonRender = document.getElementById('renderGL');
+			buttonRender.addEventListener('click', function () {
+				GLRenderer.render(scene, camera);
+			});
+
+			var buttonRender = document.getElementById('download');
+			buttonRender.addEventListener('click', function () {
+				renderer.download();
+			});
+
+			var environments = document.getElementById('env');
+			env.onchange = function () {
+				scene.background = new THREE.TextureLoader().load("Environments/PNG/" + env.value);
+			};
+
+			//
+
+			initScene(window.innerWidth, window.innerHeight);
+
+			//
+			var numFrames = 1;
+			renderer = new MonteRay.PathtracingRenderer({
+				alpha: true,
+				fps: 10,
+				renderMode: MonteRay.CenterRenderMode,
+				antialiasBackground: true,
+				//BVHAcceleration: false,
+				//pixelBatchSize: 1000,
+				//downloadInterval: 1,
+				//maxSamples: 20,
+				//advancedLighting: true,
+				//recursiveLighting: true,
+				//lightSamples: 10,
+				nextFrame: function () {
+					if (numFrames-- > 1) {
+						rearrange();
+						render();
+					}
+				}
+			});
+			renderer.setPixelRatio(2);
+			GLRenderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			GLRenderer.setPixelRatio(2);
+			GLRenderer.setSize(window.innerWidth, window.innerHeight);
+			GLRenderer.domElement.style.position = "absolute";
+			document.body.appendChild(GLRenderer.domElement);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.domElement.style.position = "absolute";
+			document.body.appendChild(renderer.domElement);
+
+
+			/*window.addEventListener('resize', function () {
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				GLRenderer.setSize(window.innerWidth, window.innerHeight);
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+			});*/
+
+		}
+
+
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+
+
+	</script>
+
+</body>
+
+</html>

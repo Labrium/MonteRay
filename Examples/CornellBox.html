@@ -122,7 +122,7 @@
 
 			// geometries
 
-			var sphereGeometry = new THREE.SphereBufferGeometry(100, 64, 64);
+			var sphereGeometry = new THREE.SphereBufferGeometry(100, 32, 16);
 			var planeGeometry = new THREE.BoxBufferGeometry(600, 5, 600);
 			var boxGeometry = new THREE.BoxBufferGeometry(100, 100, 100);
 
@@ -243,6 +243,8 @@
 			renderer = new MonteRay.PathtracingRenderer({
 				alpha: true,
 				fps: 10,
+				//renderMode: MonteRay.CenterRenderMode,
+				//antialiasBackground: true,
 				//BVHAcceleration: false,
 				//pixelBatchSize: 1000,
 				//downloadInterval: 1,

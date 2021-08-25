@@ -12,23 +12,23 @@
  * - http://www.joesfer.com/?p=84
  * - https://stackoverflow.com/a/4322940/1314762
  */
-var MeshSurfaceSampler = ( function () {
+var MeshSurfaceSampler = (function () {
 
 	var _face = new THREE.Triangle();
 
-	function MeshSurfaceSampler( mesh ) {
+	function MeshSurfaceSampler(mesh) {
 
 		var geometry = mesh.geometry;
 
-		if ( ! geometry.isBufferGeometry || geometry.attributes.position.itemSize !== 3 ) {
+		if (!geometry.isBufferGeometry || geometry.attributes.position.itemSize !== 3) {
 
-			throw new Error( 'THREE.MeshSurfaceSampler: Requires BufferGeometry triangle mesh.' );
+			throw new Error('THREE.MeshSurfaceSampler: Requires BufferGeometry triangle mesh.');
 
 		}
 
-		if ( geometry.index ) {
+		if (geometry.index) {
 
-			console.warn( 'THREE.MeshSurfaceSampler: Converting geometry to non-indexed BufferGeometry.' );
+			console.warn('THREE.MeshSurfaceSampler: Converting geometry to non-indexed BufferGeometry.');
 
 			geometry = geometry.toNonIndexed();
 
@@ -36,7 +36,7 @@ var MeshSurfaceSampler = ( function () {
 
 		this.geometry = geometry;
 
-		this.positionAttribute = this.geometry.getAttribute( 'position' );
+		this.positionAttribute = this.geometry.getAttribute('position');
 		this.weightAttribute = null;
 
 		this.distribution = null;
@@ -47,9 +47,9 @@ var MeshSurfaceSampler = ( function () {
 
 		constructor: MeshSurfaceSampler,
 
-		setWeightAttribute: function ( name ) {
+		setWeightAttribute: function (name) {
 
-			this.weightAttribute = name ? this.geometry.getAttribute( name ) : null;
+			this.weightAttribute = name ? this.geometry.getAttribute(name) : null;
 
 			return this;
 
@@ -60,43 +60,43 @@ var MeshSurfaceSampler = ( function () {
 			var positionAttribute = this.positionAttribute;
 			var weightAttribute = this.weightAttribute;
 
-			var faceWeights = new Float32Array( positionAttribute.count / 3 );
+			var faceWeights = new Float32Array(positionAttribute.count / 3);
 
 			// Accumulate weights for each mesh face.
 
-			for ( var i = 0; i < positionAttribute.count; i += 3 ) {
+			for (var i = 0; i < positionAttribute.count; i += 3) {
 
 				var faceWeight = 1;
 
-				if ( weightAttribute ) {
+				if (weightAttribute) {
 
-					faceWeight = weightAttribute.getX( i )
-						+ weightAttribute.getX( i + 1 )
-						+ weightAttribute.getX( i + 2 );
+					faceWeight = weightAttribute.getX(i)
+						+ weightAttribute.getX(i + 1)
+						+ weightAttribute.getX(i + 2);
 
 				}
 
-				_face.a.fromBufferAttribute( positionAttribute, i );
-				_face.b.fromBufferAttribute( positionAttribute, i + 1 );
-				_face.c.fromBufferAttribute( positionAttribute, i + 2 );
+				_face.a.fromBufferAttribute(positionAttribute, i);
+				_face.b.fromBufferAttribute(positionAttribute, i + 1);
+				_face.c.fromBufferAttribute(positionAttribute, i + 2);
 				faceWeight *= _face.getArea();
 
-				faceWeights[ i / 3 ] = faceWeight;
+				faceWeights[i / 3] = faceWeight;
 
 			}
 
 			// Store cumulative total face weights in an array, where weight index
 			// corresponds to face index.
 
-			this.distribution = new Float32Array( positionAttribute.count / 3 );
+			this.distribution = new Float32Array(positionAttribute.count / 3);
 
 			var cumulativeTotal = 0;
 
-			for ( var i = 0; i < faceWeights.length; i ++ ) {
+			for (var i = 0; i < faceWeights.length; i++) {
 
-				cumulativeTotal += faceWeights[ i ];
+				cumulativeTotal += faceWeights[i];
 
-				this.distribution[ i ] = cumulativeTotal;
+				this.distribution[i] = cumulativeTotal;
 
 			}
 
@@ -104,17 +104,17 @@ var MeshSurfaceSampler = ( function () {
 
 		},
 
-		sample: function ( targetPosition, targetNormal ) {
+		sample: function (targetPosition, targetNormal) {
 
-			var cumulativeTotal = this.distribution[ this.distribution.length - 1 ];
+			var cumulativeTotal = this.distribution[this.distribution.length - 1];
 
-			var faceIndex = this.binarySearch( Math.random() * cumulativeTotal );
+			var faceIndex = this.binarySearch(Math.random() * cumulativeTotal);
 
-			return this.sampleFace( faceIndex, targetPosition, targetNormal );
+			return this.sampleFace(faceIndex, targetPosition, targetNormal);
 
 		},
 
-		binarySearch: function ( x ) {
+		binarySearch: function (x) {
 
 			var dist = this.distribution;
 			var start = 0;
@@ -122,17 +122,17 @@ var MeshSurfaceSampler = ( function () {
 
 			var index = - 1;
 
-			while ( start <= end ) {
+			while (start <= end) {
 
-				var mid = Math.ceil( ( start + end ) / 2 );
+				var mid = Math.ceil((start + end) / 2);
 
-				if ( mid === 0 || dist[ mid - 1 ] <= x && dist[ mid ] > x ) {
+				if (mid === 0 || dist[mid - 1] <= x && dist[mid] > x) {
 
 					index = mid;
 
 					break;
 
-				} else if ( x < dist[ mid ] ) {
+				} else if (x < dist[mid]) {
 
 					end = mid - 1;
 
@@ -148,29 +148,29 @@ var MeshSurfaceSampler = ( function () {
 
 		},
 
-		sampleFace: function ( faceIndex, targetPosition, targetNormal ) {
+		sampleFace: function (faceIndex, targetPosition, targetNormal) {
 
 			var u = Math.random();
 			var v = Math.random();
 
-			if ( u + v > 1 ) {
+			if (u + v > 1) {
 
 				u = 1 - u;
 				v = 1 - v;
 
 			}
 
-			_face.a.fromBufferAttribute( this.positionAttribute, faceIndex * 3 );
-			_face.b.fromBufferAttribute( this.positionAttribute, faceIndex * 3 + 1 );
-			_face.c.fromBufferAttribute( this.positionAttribute, faceIndex * 3 + 2 );
+			_face.a.fromBufferAttribute(this.positionAttribute, faceIndex * 3);
+			_face.b.fromBufferAttribute(this.positionAttribute, faceIndex * 3 + 1);
+			_face.c.fromBufferAttribute(this.positionAttribute, faceIndex * 3 + 2);
 
 			targetPosition
-				.set( 0, 0, 0 )
-				.addScaledVector( _face.a, u )
-				.addScaledVector( _face.b, v )
-				.addScaledVector( _face.c, 1 - ( u + v ) );
+				.set(0, 0, 0)
+				.addScaledVector(_face.a, u)
+				.addScaledVector(_face.b, v)
+				.addScaledVector(_face.c, 1 - (u + v));
 
-			_face.getNormal( targetNormal );
+			_face.getNormal(targetNormal);
 
 			return this;
 
@@ -180,6 +180,6 @@ var MeshSurfaceSampler = ( function () {
 
 	return MeshSurfaceSampler;
 
-} )();
+})();
 
 //export { MeshSurfaceSampler };
