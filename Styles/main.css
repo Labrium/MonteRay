@@ -24,7 +24,8 @@ button {
 
 canvas {
 	display: block;
-	image-rendering: pixelated;
+	/*image-rendering: pixelated;*/
+	transition: opacity 0.25s linear;
 }
 
 #info {
@@ -39,12 +40,16 @@ canvas {
 	-ms-user-select: none;
 	user-select: none;
 	pointer-events: none;
-	z-index: 1; /* TODO Solve this in HTML */
+	z-index: 1;
+	/* TODO Solve this in HTML */
 	filter: invert(1);
 	mix-blend-mode: difference;
 }
 
-a, button, input, select {
+a,
+button,
+input,
+select {
 	pointer-events: auto;
 }
 
@@ -53,7 +58,8 @@ a, button, input, select {
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	z-index: 2 !important; /* TODO Solve this in HTML */
+	z-index: 2 !important;
+	/* TODO Solve this in HTML */
 }
 
 #overlay {
@@ -62,7 +68,7 @@ a, button, input, select {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height:100%;
+	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -71,11 +77,11 @@ a, button, input, select {
 	color: #ffffff;
 }
 
-#overlay > div {
+#overlay>div {
 	text-align: center;
 }
 
-#overlay > div > button {
+#overlay>div>button {
 	height: 20px;
 	background: transparent;
 	color: #ffffff;
@@ -84,7 +90,7 @@ a, button, input, select {
 	cursor: pointer;
 }
 
-#overlay > div > p {
+#overlay>div>p {
 	color: #777777;
 	font-size: 12px;
 }

@@ -14,20 +14,26 @@
 		MonteRay - A <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> pathtracing renderer - <a href="https://github.com/TechLabsInc/MonteRay">Source</a>
 		<!--(using <span id="workers"></span>
 		<button id="removeWorker">-</button><button id="addWorker">+</button> web workers)--><br />
-		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Download</button>
+		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Save</button>
 		Environment:
 		<select id="env">
-			<option value="hilly_terrain_01_1k.png">Hilly Terrain</option>
-			<option value="kiara_1_dawn_1k.png">Kiara Dawn</option>
-			<option value="snowy_park_01_1k.png">Snowy Park</option>
-			<option value="wide_street_01_1k.png">Wide Street</option>
-			<option value="stone_alley_03_1k.png">Stone Alley</option>
-			<option value="kloppenheim_02_1k.png">Kloppenheim Night</option>
-			<option value="kloppenheim_04_1k.png">Kloppenheim Overcast</option>
-			<option value="lookout_1k.png">Lookout</option>
-			<option value="lebombo_1k.png">Lebombo House</option>
-			<option value="adams_place_bridge_1k.png">Adams Place Bridge</option>
-			<option value="fireplace_1k.png">Fireplace</option>
+			<option value="hilly_terrain_01_1k">Hilly Terrain</option>
+			<option value="kiara_1_dawn_1k">Kiara Dawn</option>
+			<option value="snowy_park_01_1k">Snowy Park</option>
+			<option value="wide_street_01_1k">Wide Street</option>
+			<option value="stone_alley_03_1k">Stone Alley</option>
+			<option value="kloppenheim_02_1k">Kloppenheim Night</option>
+			<option value="kloppenheim_04_1k">Kloppenheim Overcast</option>
+			<option value="lookout_1k">Lookout</option>
+			<option value="lebombo_1k">Lebombo House</option>
+			<option value="adams_place_bridge_1k">Adams Place Bridge</option>
+			<option value="fireplace_1k">Fireplace</option>
+			<option value="reading_room_1k">Reading Room</option>
+			<option value="royal_esplanade_1k">Royal Esplanade</option>
+			<option value="venice_sunset_1k">Venice Sunset</option>
+			<option value="pedestrian_overpass_1k">Pedestrian Overpass</option>
+			<option value="quarry_01_1k">Quarry</option>
+			<option value="">None</option>
 		</select>
 		<br />
 		<span id="sa">Ready</span>
@@ -35,42 +41,55 @@
 	<script src="../Lib/three.js"></script>
 	<script src="../Lib/MeshBVHLib.js"></script>
 	<script src="../Lib/MeshSurfaceSampler.js"></script>
+	<script src="Scripts/RGBELoader.js"></script>
+	<script src="Scripts/OrbitControls.js"></script>
+	<script src="../Build/MonteRayEngine.js"></script>
 	<script src="../Build/MonteRay.js"></script>
 	<script>
+		var camera, scene, renderer, GLRenderer, hdrloader;
 
-		var camera, scene, renderer, GLRenderer;
+		function queryParam(name) {
+			name = name.replace(/[\[\]]/g, '\\$&');
+			var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+				results = regex.exec(window.location.href);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
 
 		init();
 
 		function initScene(width, height) {
 
-			camera = new THREE.PerspectiveCamera(30, width / height, 1, 10000);
+			camera = new THREE.PerspectiveCamera(30, width / height, 1, 100000);
 			camera.position.set(-500, 500, 1000);
 			camera.lookAt(new THREE.Vector3(0, 100, 0));
 			//camera.rotation.set(0, 0, 0.1);
 
+			hdrloader = new THREE.RGBELoader();
+			//hdrloader.type = THREE.FloatType;
+
 			scene = new THREE.Scene();
-			scene.background = new THREE.TextureLoader().load("Environments/PNG/hilly_terrain_01_1k.png");
+			scene.background = hdrloader.load("Environments/hilly_terrain_01_1k.hdr", function () {
+				GLRenderer.render(scene, camera);
+			});
+			//scene.background.repeat = new THREE.Vector2(5, 5);
 			//scene.background = new THREE.Color(0x80b0ff);
 			//scene.background = new THREE.Color(0xffffff);
 
 			// materials
 
 			var phongMaterial = new THREE.MeshPhongMaterial({
+				//map: scene.background,
 				color: 0xffffff,
-				specular: 0x111111,
+				specular: 0xffffff,
 				shininess: 100,
 				flatShading: false
 			});
 
-			var phongMaterialBox = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0x111111,
-				shininess: 100,
-				flatShading: true
-			});
-
-			var mirrorMaterialFlat = new THREE.MeshPhongMaterial({
+			var mirrorMaterialFlat = new THREE.MeshPhysicalMaterial({
+				metalness: 1,
+				roughness: 0,
 				color: 0xffffff,
 				specular: 0xff8888,
 				shininess: 10000,
@@ -79,10 +98,13 @@
 			mirrorMaterialFlat.mirror = true;
 			mirrorMaterialFlat.reflectivity = 1;
 
-			var mirrorMaterialSmooth = new THREE.MeshPhongMaterial({
+			var mirrorMaterialSmooth = new THREE.MeshPhysicalMaterial({
+				metalness: 1,
+				roughness: 0,
 				color: 0xffffff,
-				specular: 0x222222,
-				shininess: 10000,
+				//specular: 0x222222,
+				shininess: 1,
+				reflectivity: 1,
 				flatShading: false
 			});
 			mirrorMaterialSmooth.mirror = true;
@@ -90,7 +112,7 @@
 
 			var glassMaterialFlat = new THREE.MeshPhongMaterial({
 				color: 0xffffff,
-				specular: 0x00ff00,
+				//specular: 0xffffff,
 				shininess: 10000,
 				flatShading: true
 			});
@@ -99,14 +121,14 @@
 
 			var glassMaterialSmooth = new THREE.MeshPhongMaterial({
 				color: 0xffffff,
-				specular: 0xffffff,
+				//specular: 0xffffff,
 				shininess: 10000,
 				flatShading: false,
 				side: THREE.DoubleSide
 			});
 			glassMaterialSmooth.glass = true;
 			glassMaterialSmooth.reflectivity = 0.5;
-			glassMaterialSmooth.refractionRatio = 1;
+			glassMaterialSmooth.refractionRatio = 1.5;
 
 			var lightMaterial = new THREE.MeshPhongMaterial({
 				color: 0xffffff,
@@ -119,7 +141,8 @@
 
 			// geometries
 
-			var sphereGeometry = new THREE.SphereBufferGeometry(100, 32, 16);
+			var sphereGeometry = new THREE.SphereBufferGeometry(100, 64, 32);
+			//var sphereGeometry = new THREE.TorusKnotBufferGeometry(50, 25, 256, 32);
 			var planeGeometry = new THREE.PlaneBufferGeometry(3000, 3000);
 			var boxGeometry = new THREE.BoxBufferGeometry(200, 200, 200);
 
@@ -127,9 +150,11 @@
 
 			var sphere = new THREE.Mesh(sphereGeometry, phongMaterial);
 			sphere.position.set(-300, 100, 200);
+			//sphere.position.set(0, 100, 0);
+			//sphere.scale.setScalar(3);
 			scene.add(sphere);
 
-			var sphere = new THREE.Mesh(boxGeometry, phongMaterialBox);
+			var sphere = new THREE.Mesh(boxGeometry, phongMaterial);
 			sphere.position.set(-300, 100, -200);
 			scene.add(sphere);
 
@@ -155,11 +180,14 @@
 
 			// bottom
 
-			var plane = new THREE.Mesh(planeGeometry, phongMaterialBox.clone());
-			var chkr = new THREE.TextureLoader().load("Models/checkerboard.png");
+			var plane = new THREE.Mesh(planeGeometry, phongMaterial.clone());
+			var chkr = new THREE.TextureLoader().load("Models/checkerboard.png", function () {
+				GLRenderer.render(scene, camera);
+			});
 			chkr.repeat = new THREE.Vector2(10, 10);
 			chkr.wrapT = THREE.RepeatWrapping;
 			chkr.wrapS = THREE.RepeatWrapping;
+			chkr.magFilter = THREE.NearestFilter;
 			plane.material.map = chkr;
 			plane.rotation.x = -Math.PI / 2;
 			scene.add(plane);
@@ -171,7 +199,8 @@
 			plane.position.set(0, -200, -150);
 			//scene.add(plane);
 
-			scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1));
+			scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+			scene.children[scene.children.length - 1].position.set(-0.5, 1, 0.25);
 
 		}
 
@@ -195,7 +224,11 @@
 
 			var environments = document.getElementById('env');
 			env.onchange = function () {
-				scene.background = new THREE.TextureLoader().load("Environments/PNG/" + env.value);
+				scene.background = hdrloader.load("Environments/" + env.value + ".hdr", function () {
+					GLRenderer.render(scene, camera);
+					renderer.resetSamples();
+				});
+				renderer.resetSamples();
 			};
 
 			//
@@ -206,28 +239,29 @@
 			var numFrames = 1;
 			renderer = new MonteRay.PathtracingRenderer({
 				alpha: true,
-				fps: 10,
+				fps: 30,
 				renderMode: MonteRay.CenterRenderMode,
 				antialiasBackground: true,
+				threads: queryParam("threads"),
 				//BVHAcceleration: false,
-				//pixelBatchSize: 1000,
+				//pixelBatchSize: 10000,
 				//downloadInterval: 1,
 				//maxSamples: 20,
 				//advancedLighting: true,
 				//recursiveLighting: true,
 				//lightSamples: 10,
-				nextFrame: function () {
+				/*nextFrame: function () {
 					if (numFrames-- > 1) {
 						rearrange();
 						render();
 					}
-				}
+				}*/
 			});
-			renderer.setPixelRatio(2);
+			renderer.setPixelRatio(0.5);
 			GLRenderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			GLRenderer.setPixelRatio(2);
+			GLRenderer.setPixelRatio(0.5);
 			GLRenderer.setSize(window.innerWidth, window.innerHeight);
 			GLRenderer.domElement.style.position = "absolute";
 			document.body.appendChild(GLRenderer.domElement);
@@ -243,6 +277,22 @@
 				camera.updateProjectionMatrix();
 			});*/
 
+			var oc = new THREE.OrbitControls(camera, renderer.domElement);
+			var timeout = setTimeout(function () {}, 0);
+			oc.addEventListener("change", function () {
+				window.clearTimeout(timeout);
+				renderer.domElement.style.opacity = 0.25;
+				GLRenderer.render(scene, camera);
+				renderer.resetSamples();
+				timeout = setTimeout(function () {
+					renderer.domElement.style.opacity = 1;
+				}, 100);
+			});
+			oc.target.set(0, 100, 0);
+			oc.update();
+
+			GLRenderer.render(scene, camera);
+
 		}
 
 
@@ -250,8 +300,6 @@
 		function render() {
 			renderer.render(scene, camera);
 		}
-
-
 	</script>
 
 </body>

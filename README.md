@@ -14,15 +14,24 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
 
 [Examples](#examples) — [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
 
-![Cornell Box rendered with MonteRay](Images/CornellBoxFinalRender.png)
+![Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20CornellBox_1.png)
 
-*Tested on Three.js r112, r113, r120dev, r123, r126 and r128.*
+*Tested on:
+  Three.js:
+    r112
+    r113
+    r120dev
+    r123
+    r126
+    r128*
+
+*Tested on Safari Technology Preview, Firefox Nightly, and Google Chrome Canary*
 
 **NOTE: MeshBVH accelerated raycasting is only supported on Three.js r123 and later.**
 
 ### Features include:
 
- * 100% JavaScript (0% GLSL = no WebGL required!)
+ * 100% ES5 Vanilla JavaScript
  * Progressive rendering
  * Physically accurate rendering using Monte Carlo methods
  * Russian roulette path termination
@@ -32,28 +41,22 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
  * Background environment lighting
  * BVH Accelerated raycasting via [gkjohnson](https://github.com/gkjohnson)'s [MeshBVHLib](https://github.com/gkjohnson/three-mesh-bvh)
  * Explicit light sampling
- * Closest-first rendering
  * ... More features coming soon!
 
 &nbsp;
 
-# Examples
+| |Examples| |
+|---|---|---|
+|![Luxo Jr rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Luxo_f1_67spp.png) [Luxo Jr (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html) <br/> [Luxo Jr (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html?threads=4) | [Lighting McQueen (single thread)](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html) <br/> [Lighting McQueen (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html?threads=4) | ![Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20CornellBox_1.png) [Cornell Box (single thread)](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html) <br/> [Cornell Box (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html?threads=4)|
+| [Textures (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Textures.html) <br/> [Textures (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Textures.html?threads=4) | ![Environment maps in MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20HDRI%20Environment%20Map%20Demo_f1_102spp.png) [Environments (single thread)](https://techlabsinc.github.io/MonteRay/Examples/HDRI.html) <br/> [Environments (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/HDRI.html?threads=4) | ![Classic Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Multithread%20Demo_f2_1205spp.png) [Classic Cornell Box (single thread)](https://techlabsinc.github.io/MonteRay/Examples/CornellBoxClassicMultithread.html) <br/> [Classic Cornell Box (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/CornellBoxClassicMultithread.html?threads=4)|
+|[Lego (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Lego.html) <br/> [Lego (4 threads !WARNING! High RAM usage!)](https://techlabsinc.github.io/MonteRay/Examples/Lego.html?threads=4) | ![Spheres rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Light_380spp.png) [Light (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Light.html) <br/> [Light (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Light.html?threads=4) | [Renderman Look Development Studio (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Studio.html) <br/> [Renderman Look Development Studio (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Studio.html?threads=4)|
 
-![Luxo Jr rendered with MonteRay](Images/Luxo.png)
-
- - [Luxo Jr](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html)
- - [Lighting McQueen](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html)
- - [Cornell Box](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html)
- - [Texures](https://techlabsinc.github.io/MonteRay/Examples/Texures.html)
- - [Environments](https://techlabsinc.github.io/MonteRay/Examples/HDRI.html)
-
-![Environment maps in MonteRay](Images/Environments.png)
 
 &nbsp;
 
 # Usage
 
-**NOTE: MonteRay is in the alpha development stage right now.**
+**NOTE: MonteRay is in the beta development stage right now. Rendering quality will vary from version to version, and I will do my best to keep the API documentation up to date.**
 
 ## Installation
 
@@ -62,13 +65,14 @@ Make sure you include the following dependencies:
  - [three.js MeshSurfaceSampler](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/math/MeshSurfaceSampler.js)
  - [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh) **optional*
 
-Download the [latest build of MonteRay](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRay.min.js), and include it as an HTML script:
+Download the [latest build of the MonteRay Client](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRay.js), [the MonteRay Engine](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRayEngine.js), and optionally [the MonteRay Thread Client](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRayThread.js), and include them as an HTML script:
 
 ```html
+<script src="MonteRayEngine.js"></script>
 <script src="MonteRay.js"></script>
 ```
 
-And it is ready to use in your Three.js project:
+And MonteRay is ready to use in your Three.js project:
 
 ```javascript
 var renderer = new MonteRay.PathtracingRenderer(options);
@@ -95,11 +99,12 @@ see [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
  * Diffuse
  * Mirror
  * Refractive **experimental*
+ * Glossy **experimental*
  * ... Other materials coming soon!
 
 `MonteRay.CustomMaterial` (allowing for volumetric meshes like water, fog and clouds) coming soon!
 
-**NOTE: `THREE.ShaderMaterial` and `THREE.RawShaderMaterial` will not be implemented for the sake of not using WebGL.**
+**NOTE: `THREE.ShaderMaterial` and `THREE.RawShaderMaterial` might not be implemented for the sake of not using WebGL.**
 
 &nbsp;
 
@@ -114,7 +119,6 @@ Needless to say, I decided to take it upon myself to create a fully-functional T
  3. Emissive meshes as lights instead of default Three.js lights for soft shadows and projectors
  4. Native Three.js raycasters to allow much easier BVH acceleration (and mainly to make it easier for myself since this is my first try at path tracing)
  5. Native Three.js colors for automatic clamping and color equations
- 6. No GLSL!
 
 (basically as integrated with Three.js as possible)
 
@@ -128,16 +132,16 @@ In this project, I use a variety of methods to improve accuracy and speed of tra
 
 MonteRay divides the rendering process into two phases:
 
- 1. Pre-rendering
+ 1. Pre-rendering 
  2. Rendering
 
 ## Pre-rendering Phase
 
-During the pre-rendering phase MonteRay analyzes the scene computing the BVH trees of all meshes and registering meshes with emissive materials for explicit lighting, then writes the depth data to the screen as a placeholder
+During the pre-rendering phase MonteRay analyzes the scene computing the BVH trees of all meshes and registering meshes with emissive materials for explicit lighting, ~~then writes the depth data to the screen as a placeholder~~
 
 ![Cornell Box depth map](Images/CornellBoxDepthMap.png)
 
-and orders the pixels by depth to allow for closest-first rendering.
+~~and orders the pixels by depth to allow for closest-first rendering.~~
 
 ![Cornell Box closest-first rendering](Images/CornellBoxClosestFirst.png)
 
@@ -150,35 +154,79 @@ During the rendering phase MonteRay backward traces each path and averages the s
 &nbsp;
 
 # TODO
- - [ ] Texture maps
+ - [x] Texture maps
    - [x] Diffuse
    - [ ] Emissive
    - [ ] Roughness
-   - [ ] Normal
+   - [x] Normal
      - [x] Tangent Space
      - [ ] Object Space
    - [ ] Bump
    - [ ] Displacement
- - [ ] Texture wrapping/repeat
- - [ ] Environment maps
+     - [ ] Per-vertex
+     - [ ] Per-pixel
+ - [x] Texture wrapping/repeat
+   - [x] `THREE.RepeatWrapping`
+   - [x] `THREE.ClampToEdgeWrapping`
+   - [x] `THREE.MirroredRepeatWrapping`
+   - [x] `THREE.Texture.repeat`
+   - [x] `THREE.Texture.rotation`
+   - [x] `THREE.Texture.center`
+   - [x] `THREE.Texture.offset`
+ - [x] Texture filtering
+   - [x] `THREE.NearestFilter`
+   - [ ] `THREE.LinearFilter`
+ - [x] Environment maps
    - [x] All standard images supported by browser (PNG/JPEG/etc.)
    - [ ] EXR
-   - [ ] HDRI
- - [ ] Background emissive maps and background intensity (for non-EXR/HDRI images)
- - [ ] Standard materials
+   - [x] HDR
+ - [ ] WebGLRenderTarget/WebGLCubeRenderTarget support
+ - [ ] CubeTexture environment maps
+ - [ ] Background emissive maps and environment intensity (for non-EXR/HDR images)
+ - [ ] Per-material environment maps
+ - [x] Standard materials
    - [x] Diffuse
    - [x] Specular (Mirror)
-   - [ ] Clearcoat (Glossy)
+   - [x] Clearcoat (Glossy) **experimental*
    - [x] Refractive **experimental*
- - [x] Antialiasing  **partial support*
- - [ ] Noise reduction (through variance reduction or simple denoising)
- - [ ] Instancing  support (`THREE.InstancedMesh`)
- - [ ] Multi-thread support via Web Worker API
+ - [ ] Tonemapping
+   - [x] Linear **currently disabled as sRGB is the default*
+   - [x] sRGB
+   - [ ] Reinhard
+   - [ ] Extended Reinhard
+   - [ ] Extended Luminance Reinhard
+   - [ ] ACES Filmic
+   - [ ] Uncharted 2 Filmic
+   - [ ] Cineon
+ - [x] Fix double-sided surface normal calculation to avoid randomly inverted normals
+ - [ ] Support for raytraced primitives with a triangulated counterpart for visibility in WebGL
+ - [ ] Vertex colors support
+ - [x] Antialiasing  **background optional*
+ - [ ] Noise reduction (through variance reduction or denoising)
+ - [ ] Possible support for native Three.js lights???
+ - [ ] Instancing support/testing (`THREE.InstancedMesh`)
+ - [ ] Skinned mesh support/testing (`THREE.SkinnedMesh`)
+ - [ ] Testing and support for:
+   - [ ] `THREE.OrthographicCamera`
+   - [ ] `THREE.CinematicCamera`
+   - [ ] `THREE.ArrayCamera`
+   - [ ] `THREE.CubeCamera`
+   - [ ] `THREE.StereoCamera`
+   - [ ] Possibly `MonteRay.PanoramicCamera` ???
+ - [ ] Global space partitioning system for accelerated raycasting across multiple meshes
+ - [x] Multi-thread support via Web Worker API **Textures (except `THREE.DataTexture`) are not supported*
+   - [ ] Include support for `SharedArrayBuffer` to decrease redundant memory and increase performance
+ - [ ] Read directly from `THREE.DataTexture` to avoid redundant data
  - [x] Smooth shading
+ - [x] Quadratic light decay/falloff
+ - [ ] Fog support
+ - [ ] Multi-material mesh support (geometry groups)
+ - [ ] Support for `TypedArray` (possibly interlaced) texture cache and output image internal storage format to save memory
+ - [ ] Multiple Importance Sampling for HDRIs and smarter explicit light sampling
 
 &nbsp;
 
 # License
-[MonteRay](https://github.com/TechLabsInc/MonteRay) © 2021 by [Tech Labs Inc.](https://github.com/TechLabsInc) is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0).
+[MonteRay](https://github.com/TechLabsInc/MonteRay) © 2021-2022 by [Tech Labs Inc.](https://github.com/TechLabsInc) is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0).
 
 [![licensebuttons by-nc-sa](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0)

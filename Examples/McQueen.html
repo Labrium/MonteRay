@@ -14,22 +14,32 @@
 		MonteRay - A <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> pathtracing renderer - <a href="https://github.com/TechLabsInc/MonteRay">Source</a>
 		<!--(using <span id="workers"></span>
 		<button id="removeWorker">-</button><button id="addWorker">+</button> web workers)--><br />
-		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Download</button><br />
-		<span id="sa">Ready</span>
+		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="download">Save</button><br />
+		<span id="sa">Loading...</span>
 	</div>
 	<script src="../Lib/three.js"></script>
 	<script src="../Lib/MeshBVHLib.js"></script>
 	<script src="../Lib/MeshSurfaceSampler.js"></script>
 	<script src="Scripts/STLLoader.js"></script>
+	<script src="Scripts/OrbitControls.js"></script>
+	<script src="../Build/MonteRayEngine.js"></script>
 	<script src="../Build/MonteRay.js"></script>
 	<script>
-
 		var hash = location.hash ? location.hash.substring(1) : '50';
 
-		var WORKERS = + hash || navigator.hardwareConcurrency || 3;
+		var WORKERS = +hash || navigator.hardwareConcurrency || 3;
 
 		var camera, scene, renderer, GLRenderer;
 		var group;
+
+		function queryParam(name) {
+			name = name.replace(/[\[\]]/g, '\\$&');
+			var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+				results = regex.exec(window.location.href);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
 
 		init();
 
@@ -42,196 +52,48 @@
 
 			scene = new THREE.Scene();
 			scene.background = new THREE.Color(0xc0e0ff);
-			//scene.background = new THREE.Color(0xffffff);
-
-			// materials
-
-			var phongMaterial = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0x111111,
-				shininess: 100,
-				flatShading: false
-			});
-
-			var phongMaterialBox = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0x111111,
-				shininess: 100,
-				flatShading: true
-			});
-
-			var phongMaterialBoxLeft = new THREE.MeshPhongMaterial({
-				color: 0xff0000,
-				specular: 0x111111,
-				shininess: 100,
-				flatShading: true
-			});
-
-			var phongMaterialBoxRight = new THREE.MeshPhongMaterial({
-				color: 0x00ff00,
-				specular: 0x111111,
-				shininess: 100,
-				flatShading: true
-			});
-
-			var mirrorMaterialFlat = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0xff8888,
-				shininess: 10000,
-				flatShading: true
-			});
-			mirrorMaterialFlat.mirror = true;
-			mirrorMaterialFlat.reflectivity = 1;
-
-			var mirrorMaterialSmooth = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0x222222,
-				shininess: 10000,
-				flatShading: false
-			});
-			mirrorMaterialSmooth.mirror = true;
-			mirrorMaterialSmooth.reflectivity = 1;
-
-			var glassMaterialFlat = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0x00ff00,
-				shininess: 10000,
-				flatShading: true
-			});
-			glassMaterialFlat.glass = true;
-			glassMaterialFlat.reflectivity = 0.5;
-
-			var glassMaterialSmooth = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				specular: 0xffffff,
-				shininess: 10000,
-				flatShading: false,
-				side: THREE.DoubleSide
-			});
-			glassMaterialSmooth.glass = true;
-			glassMaterialSmooth.reflectivity = 0.5;
-			glassMaterialSmooth.refractionRatio = 1;
-
-			var lightMaterial = new THREE.MeshPhongMaterial({
-				color: 0xffffff,
-				emissive: 0xffffff,
-				emissiveIntensity: 1
-			});
-
-			//
-
-			group = new THREE.Group();
-			scene.add(group);
-
-			// geometries
-
-			var sphereGeometry = new THREE.SphereBufferGeometry(100, 64, 64);
-			var planeGeometry = new THREE.BoxBufferGeometry(600, 5, 600);
-			var boxGeometry = new THREE.BoxBufferGeometry(100, 100, 100);
-
-			// Sphere
-
-			var sphere = new THREE.Mesh(sphereGeometry, phongMaterial);
-			sphere.scale.multiplyScalar(0.5);
-			sphere.position.set(- 50, - 250 + 5, - 50);
-			group.add(sphere);
-
-			var sphere2 = new THREE.Mesh(sphereGeometry, mirrorMaterialSmooth);
-			sphere2.scale.multiplyScalar(0.5);
-			sphere2.position.set(175, - 250 + 5, - 150);
-			//sphere2.position.set(0, 0, - 150);
-			group.add(sphere2);
-
-			// Box
-
-			var box = new THREE.Mesh(boxGeometry, mirrorMaterialFlat);
-			box.position.set(- 175, - 250 + 2.5, - 150);
-			box.rotation.y = 0.5;
-			group.add(box);
-
-			// Glass
-
-			var glass = new THREE.Mesh(sphereGeometry, glassMaterialSmooth);
-			glass.scale.multiplyScalar(0.5);
-			glass.position.set(100, - 240 + 5, - 75);
-			glass.rotation.y = 0.5;
-			group.add(glass);
-
-			// bottom
-
-			var plane = new THREE.Mesh(planeGeometry, phongMaterialBox.clone());
-			//plane.material.mirror = true;
-			plane.position.set(0, - 300 + 2.5, - 300);
-			scene.add(plane);
-
-			// top
-
-			var plane = new THREE.Mesh(planeGeometry, lightMaterial);
-			plane.position.set(0, 300 - 2.5, - 300);
-			scene.add(plane);
-
-			// back
-
-			var plane = new THREE.Mesh(planeGeometry, phongMaterialBox);
-			plane.rotation.x = 1.57;
-			plane.position.set(0, 0, - 300);
-			scene.add(plane);
-
-			/*var plane = new THREE.Mesh( planeGeometry, mirrorMaterialFlatDark );
-			plane.rotation.x = 1.57;
-			plane.position.set( 0, 0, - 300 + 10 );
-			plane.scale.multiplyScalar( 0.85 );
-			scene.add( plane );*/
-
-			// left
-
-			var plane = new THREE.Mesh(planeGeometry, phongMaterialBoxLeft);
-			plane.rotation.z = 1.57;
-			plane.position.set(- 300, 0, - 300);
-			scene.add(plane);
-
-			// right
-
-			var plane = new THREE.Mesh(planeGeometry, phongMaterialBoxRight);
-			plane.rotation.z = 1.57;
-			plane.position.set(300, 0, - 300);
-			scene.add(plane);
-
-			// light
-
-			var plane = new THREE.Mesh(sphereGeometry, lightMaterial.clone());
-			plane.scale.multiplyScalar(0.5);
-			plane.position.set(0, -200, -150);
-			//scene.add(plane);
+			//scene.background = new THREE.Color(0x000000);
 
 			new THREE.STLLoader().load("./Models/Mcqueen_Car.STL", function (obj) {
 				scene.children = [];
 				scene.add(new THREE.Mesh(obj, new THREE.MeshLambertMaterial()));
 				scene.children[0].rotation.y = Math.PI;
 				scene.children[0].position.set(40, 0, 80);
-				scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1));
-				var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500), new THREE.MeshLambertMaterial({ color: 0xaaddff }));
+				scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+				scene.children[scene.children.length - 1].position.set(-0.5, 1, 0.25);
+				var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500), new THREE.MeshLambertMaterial({
+					color: 0xaaddff
+				}));
 				ground.rotation.x = -Math.PI / 2;
 				ground.position.y = 0;
 				scene.add(ground);
 
-				var bwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({ color: 0xff5555 }));
+				var bwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({
+					color: 0xff5555
+				}));
 				bwall.position.z = -250;
 				scene.add(bwall);
 
-				var rwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({ color: 0xaaffaa }));
+				var rwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({
+					color: 0xaaffaa
+				}));
 				rwall.rotation.y = Math.PI / 2;
 				rwall.position.z = 0;
 				rwall.position.x = -250;
 				scene.add(rwall);
 
-				var rwall = new THREE.Mesh(new THREE.PlaneBufferGeometry(440, 200), new THREE.MeshLambertMaterial({ color: 0xccddee }));
-				rwall.material.mirror = true;
+				var rwall = new THREE.Mesh(new THREE.PlaneBufferGeometry(440, 200), new THREE.MeshPhysicalMaterial({
+					color: 0xccddee,
+					metalness: 1,
+					roughness: 0
+				}));
 				rwall.rotation.y = Math.PI / 2;
 				rwall.position.set(-249, 120, 0);
 				scene.add(rwall);
 
-				var lwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({ color: 0xaaffaa }));
+				var lwall = new THREE.Mesh(ground.geometry.clone(), new THREE.MeshLambertMaterial({
+					color: 0xaaffaa
+				}));
 				lwall.rotation.y = -Math.PI / 2;
 				lwall.position.z = 0;
 				lwall.position.x = 250;
@@ -239,13 +101,31 @@
 
 				var light = new THREE.Mesh(new THREE.SphereBufferGeometry(10, 8, 6), new THREE.MeshPhongMaterial({
 					emissive: 0xffffff,
-					emissiveIntensity: 0.5
+					emissiveIntensity: 20000
 				}));
-				light.position.set(100, 200, -100);
+				light.position.set(50, 100, -50);
 				scene.add(light);
 				var l2 = light.clone();
-				light.position.set(-100, 200, 100);
+				light.position.set(-50, 100, 50);
 				scene.add(l2);
+
+				var oc = new THREE.OrbitControls(camera, renderer.domElement);
+				var timeout = setTimeout(function () {}, 0);
+				oc.addEventListener("change", function () {
+					window.clearTimeout(timeout);
+					renderer.domElement.style.opacity = 0.25;
+					GLRenderer.render(scene, camera);
+					renderer.resetSamples();
+					timeout = setTimeout(function () {
+						renderer.domElement.style.opacity = 1;
+					}, 100);
+				});
+				oc.target.set(0, 10, 0);
+				oc.update();
+
+				document.getElementById("sa").innerHTML = "Ready";
+
+				GLRenderer.render(scene, camera);
 			});
 
 		}
@@ -283,8 +163,10 @@
 			//
 			var numFrames = 1;
 			renderer = new MonteRay.PathtracingRenderer({
+				renderMode: MonteRay.CenterRenderMode,
 				alpha: true,
-				fps: 10,
+				fps: 30,
+				threads: queryParam("threads"),
 				//pixelBatchSize: 10000,
 				//BVHAcceleration: false,
 				//downloadInterval: 1,
@@ -292,17 +174,17 @@
 				//advancedLighting: true,
 				//recursiveLighting: true,
 				//lightSamples: 10,
-				nextFrame: function () {
+				/*nextFrame: function () {
 					if (numFrames-- > 1) {
 						render();
 					}
-				}
+				}*/
 			});
-			renderer.setPixelRatio(2);
+			renderer.setPixelRatio(0.5);
 			GLRenderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			GLRenderer.setPixelRatio(2);
+			GLRenderer.setPixelRatio(0.5);
 			GLRenderer.setSize(window.innerWidth, window.innerHeight);
 			GLRenderer.domElement.style.position = "absolute";
 			document.body.appendChild(GLRenderer.domElement);
@@ -328,7 +210,7 @@
 
 		function removeWorker() {
 
-			updateWorkers(- 1);
+			updateWorkers(-1);
 
 		}
 
@@ -349,8 +231,6 @@
 		function render() {
 			renderer.render(scene, camera);
 		}
-
-
 	</script>
 
 </body>

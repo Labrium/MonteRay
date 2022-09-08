@@ -1,0 +1,16 @@
+body {
+	margin: 0;
+	background-color:transparent;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	overflow: hidden;
+	cursor: default;
+}
+
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}

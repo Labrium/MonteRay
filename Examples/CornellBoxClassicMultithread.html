@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>MonteRay - A Three.js pathtracing renderer - Multithread Demo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="../Styles/main.css">
+</head>
+
+<body>
+
+	<div id="info">
+		MonteRay - A <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> pathtracing renderer - <a href="https://github.com/TechLabsInc/MonteRay">Source</a>
+		<!--(using <span id="workers"></span>
+		<button id="removeWorker">-</button><button id="addWorker">+</button> web workers)--><br />
+		<button id="renderGL">WebGL Render</button><button id="render">Render</button><button id="rearrange">Rearrange</button><button id="download">Save</button><br />
+		<span id="sa">Ready</span>
+	</div>
+	<script src="../Lib/three.js"></script>
+	<script src="../Lib/MeshBVHLib.js"></script>
+	<script src="../Lib/MeshSurfaceSampler.js"></script>
+	<script src="Scripts/OrbitControls.js"></script>
+	<script src="../Build/MonteRayEngine.js"></script>
+	<script src="../Build/MonteRay.js"></script>
+	<script>
+		var hash = location.hash ? location.hash.substring(1) : '50';
+
+		var WORKERS = +hash || navigator.hardwareConcurrency || 3;
+
+		var camera, scene, renderer, GLRenderer;
+		var group;
+
+		function queryParam(name) {
+			name = name.replace(/[\[\]]/g, '\\$&');
+			var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+				results = regex.exec(window.location.href);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
+
+		init();
+
+		function initScene(width, height) {
+
+			camera = new THREE.PerspectiveCamera(31, width / height, 0.1, 10000);
+			camera.position.set(0, 1, 4.82);
+			camera.lookAt(0, 1, 0);
+
+			scene = new THREE.Scene();
+			//scene.background = new THREE.Color(0xb0d0ff);
+			scene.background = new THREE.Color(0x000000);
+			//scene.background = new THREE.Color(0xffffff);
+
+			// materials
+
+			var red = new THREE.Color(Math.pow(0.7, 1 / 2.2), Math.pow(0.12, 1 / 2.2), Math.pow(0.05, 1 / 2.2));
+			var white = new THREE.Color(Math.pow(1, 1 / 2.2), Math.pow(1, 1 / 2.2), Math.pow(1, 1 / 2.2));
+			var green = new THREE.Color(Math.pow(0.2, 1 / 2.2), Math.pow(0.4, 1 / 2.2), Math.pow(0.36, 1 / 2.2));
+
+			var phongMaterial = new THREE.MeshPhongMaterial({
+				color: white,
+				//specular: 0xffffff,
+				shininess: 1,
+				flatShading: false,
+				refractionRatio: 0.25
+			});
+
+			var lightMaterial = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				emissive: new THREE.Color(Math.pow(1, 1 / 2.2), Math.pow(0.7, 1 / 2.2), Math.pow(0.38, 1 / 2.2)),
+				emissiveIntensity: 3
+			});
+
+			//
+
+			group = new THREE.Group();
+			scene.add(group);
+
+			// geometries
+
+			var planeGeometry = new THREE.PlaneBufferGeometry(1, 1);
+			var boxGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
+			//var boxGeometry = new THREE.SphereBufferGeometry(0.5, 64, 32);
+			//var boxGeometry = new THREE.TorusBufferGeometry(0.3, 0.2, 128, 32);
+
+
+			// top
+			var plane = new THREE.Mesh(planeGeometry, phongMaterial);
+			plane.position.set(0, 2, 0);
+			plane.scale.set(2, 2, 1);
+			plane.rotation.x = Math.PI / 2;
+			group.add(plane);
+
+			// bottom
+			var plane = new THREE.Mesh(planeGeometry, phongMaterial);
+			plane.rotation.x = -Math.PI / 2;
+			plane.scale.set(2, 2, 1);
+			group.add(plane);
+
+			// back
+			var plane = new THREE.Mesh(planeGeometry, phongMaterial);
+			plane.position.set(0, 1, -1);
+			plane.scale.set(2, 2, 1);
+			plane.rotation.x = 0;
+			group.add(plane);
+
+			// left
+			var plane = new THREE.Mesh(planeGeometry, phongMaterial.clone());
+			plane.material.color = red;
+			plane.position.set(-1, 1, 0);
+			plane.scale.set(2, 2, 1);
+			plane.rotation.y = Math.PI / 2;
+			group.add(plane);
+
+			// right
+			var plane = new THREE.Mesh(planeGeometry, phongMaterial.clone());
+			plane.material.color = green;
+			plane.position.set(1, 1, 0);
+			plane.scale.set(2, 2, 1);
+			plane.rotation.y = -Math.PI / 2;
+			group.add(plane);
+
+			// light
+			var plane = new THREE.Mesh(planeGeometry, lightMaterial);
+			plane.position.set(0, 1.99, 0);
+			plane.scale.set(0.5, 0.5, 1);
+			plane.rotation.x = Math.PI / 2;
+			group.add(plane);
+
+
+
+			// short box
+			var plane = new THREE.Mesh(boxGeometry, phongMaterial);
+			plane.position.set(0.32631, 0.3, 0.374592);
+			plane.rotation.set(0, (163.36 / 180) * Math.PI, 0);
+			//plane.rotation.set(Math.PI / 2, 0, 0);
+			plane.scale.set(0.6, 0.6, 0.6);
+			group.add(plane);
+
+			// tall box
+			var plane = new THREE.Mesh(boxGeometry, new THREE.MeshPhysicalMaterial({
+				roughness: 0,
+				metalness: 1
+			}));
+			plane.position.set(-0.335439, 0.6, -0.291415);
+			plane.rotation.set(0, (-160.812 / 180) * Math.PI, 0);
+			plane.scale.set(0.6, 1.2, 0.6);
+			group.add(plane);
+
+			scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+			scene.children[scene.children.length - 1].position.set(-0.5, 1, 0.25);
+
+		}
+
+		function init() {
+
+			var buttonRearrange = document.getElementById('rearrange');
+			buttonRearrange.addEventListener('click', rearrange);
+
+			var buttonRender = document.getElementById('render');
+			buttonRender.addEventListener('click', function () {
+				//numFrames = Number(prompt("How many frames?"));
+				render();
+			});
+
+			var buttonRender = document.getElementById('renderGL');
+			buttonRender.addEventListener('click', function () {
+				GLRenderer.render(scene, camera);
+			});
+
+			var buttonRender = document.getElementById('download');
+			buttonRender.addEventListener('click', function () {
+				renderer.download();
+			});
+
+			/*var buttonRemoveWorker = document.getElementById('removeWorker');
+			buttonRemoveWorker.addEventListener('click', removeWorker);
+
+			var buttonAddWorker = document.getElementById('addWorker');
+			buttonAddWorker.addEventListener('click', addWorker);
+
+			updateWorkers();*/
+
+			//
+
+			initScene(window.innerWidth, window.innerHeight);
+
+			//
+			var numFrames = 1;
+			renderer = new MonteRay.PathtracingRenderer({
+				alpha: true,
+				fps: 30,
+				renderMode: MonteRay.CenterRenderMode,
+				antialiasBackground: true,
+				threads: queryParam("threads"),
+				//BVHAcceleration: false,
+				//pixelBatchSize: 1000,
+				//downloadInterval: 1,
+				//maxSamples: 20,
+				//advancedLighting: true,
+				//recursiveLighting: true,
+				//lightSamples: 4
+			});
+			renderer.setPixelRatio(0.5);
+			GLRenderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			GLRenderer.setPixelRatio(0.5);
+			GLRenderer.setSize(window.innerWidth, window.innerHeight);
+			GLRenderer.domElement.style.position = "absolute";
+			document.body.appendChild(GLRenderer.domElement);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.domElement.style.position = "absolute";
+			document.body.appendChild(renderer.domElement);
+
+
+			/*window.addEventListener('resize', function () {
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				GLRenderer.setSize(window.innerWidth, window.innerHeight);
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+			});*/
+
+			var oc = new THREE.OrbitControls(camera, renderer.domElement);
+			var timeout = setTimeout(function () {}, 0);
+			oc.addEventListener("change", function () {
+				window.clearTimeout(timeout);
+				renderer.domElement.style.opacity = 0.25;
+				GLRenderer.render(scene, camera);
+				renderer.resetSamples();
+				timeout = setTimeout(function () {
+					renderer.domElement.style.opacity = 1;
+				}, 100);
+			});
+			oc.target.set(0, 1, 0);
+			oc.update();
+
+			GLRenderer.render(scene, camera);
+
+		}
+
+		function addWorker() {
+
+			updateWorkers(1);
+
+		}
+
+		function removeWorker() {
+
+			updateWorkers(-1);
+
+		}
+
+		function updateWorkers(x) {
+
+			if (x) {
+
+				WORKERS = Math.max(1, WORKERS + x);
+				renderer.setWorkers(WORKERS);
+
+			}
+
+			var labelWorkers = document.getElementById('workers');
+			labelWorkers.textContent = WORKERS;
+
+		}
+
+		function rearrange() {
+
+			group.children.forEach(function (o) {
+
+				o.position.y += 0.5;
+				o.position.x += 0.5;
+				o.position.z += 0.5;
+
+			});
+
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+	</script>
+
+</body>
+
+</html>
