@@ -13,7 +13,7 @@
 
 var camera, scene, loader, texturesThatExist, px, rtexid;
 
-importScripts("../Lib/Three.js", "../Lib/MeshBVHLib.js", "../Lib/MeshSurfaceSampler.js", "../Build/MonteRayEngine.js");
+importScripts("../Lib/three.js", "../Lib/MeshBVHLib.js", "../Lib/MeshSurfaceSampler.js", "../Build/MonteRayEngine.js");
 
 
 MonteRayEngine.validateImage = function (texture) {
