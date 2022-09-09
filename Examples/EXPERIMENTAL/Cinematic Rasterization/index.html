@@ -352,7 +352,7 @@ qb2.position.x = -9;
 
 var g = new THREE.Mesh(new THREE.PlaneBufferGeometry(100, 100), new THREE.MeshPhysicalMaterial({
 	//color: 0x222222,
-	map: new THREE.TextureLoader().load("../Models/checkerboard.png"),
+	map: new THREE.TextureLoader().load("../../Models/checkerboard.png"),
 	metalness: 0,
 	roughness: 1
 }));
@@ -485,7 +485,7 @@ obc.addEventListener("change", function () {
 
 console.log(obc);
 
-var aperture = 0.25;
+var aperture = 0.5;
 
 var caster = new THREE.Raycaster();
 caster.camera = camera;
