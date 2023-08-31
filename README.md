@@ -1,9 +1,9 @@
 # MonteRay - A [Three.js](https://threejs.org/) pathtracing renderer
 
 [![Licensed under CC BY-NC-SA 4.0](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey.svg?logo=creativecommons&logoColor=white)](LICENSE)
-[![Minified file size](https://img.shields.io/github/size/TechLabsInc/MonteRay/Build/MonteRay.min.js?label=minified%20size)](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRay.min.js)
-![GitHub branch checks state](https://img.shields.io/github/checks-status/TechLabsInc/MonteRay/master?logo=github)
-![GitHub all releases](https://img.shields.io/github/downloads/TechLabsInc/MonteRay/total?color=success&logo=docusign&logoColor=white)
+[![Minified file size](https://img.shields.io/github/size/Labrium/MonteRay/Build/MonteRay.min.js?label=minified%20size)](https://raw.githubusercontent.com/Labrium/MonteRay/master/Build/MonteRay.min.js)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/Labrium/MonteRay/master?logo=github)
+![GitHub all releases](https://img.shields.io/github/downloads/Labrium/MonteRay/total?color=success&logo=docusign&logoColor=white)
 
 
 [![three.js r123](https://img.shields.io/badge/three.js-r123-blue?logo=threedotjs)](https://github.com/mrdoob/three.js/releases/tag/r123)
@@ -12,7 +12,7 @@
 
 Written in 100% ES5 JavaScript using native Three.js classes and objects. This renderer has been created as an alternative to the default Three.js WebGL renderer, and will (at some future time) support most if not all Three.js scenes and materials.
 
-[Examples](#examples) — [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
+[Examples](#examples) — [API Reference](https://github.com/Labrium/MonteRay/wiki/API-Reference)
 
 ![Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20CornellBox_1.png)
 
@@ -47,9 +47,9 @@ Written in 100% ES5 JavaScript using native Three.js classes and objects. This r
 
 | |Examples| |
 |---|---|---|
-|![Luxo Jr rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Luxo_f1_67spp.png) [Luxo Jr (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html) <br/> [Luxo Jr (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Luxo.html?threads=4) | [Lighting McQueen (single thread)](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html) <br/> [Lighting McQueen (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/McQueen.html?threads=4) | ![Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20CornellBox_1.png) [Cornell Box (single thread)](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html) <br/> [Cornell Box (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/CornellBox.html?threads=4)|
-| [Textures (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Textures.html) <br/> [Textures (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Textures.html?threads=4) | ![Environment maps in MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20HDRI%20Environment%20Map%20Demo_f1_102spp.png) [Environments (single thread)](https://techlabsinc.github.io/MonteRay/Examples/HDRI.html) <br/> [Environments (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/HDRI.html?threads=4) | ![Classic Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Multithread%20Demo_f2_1205spp.png) [Classic Cornell Box (single thread)](https://techlabsinc.github.io/MonteRay/Examples/CornellBoxClassicMultithread.html) <br/> [Classic Cornell Box (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/CornellBoxClassicMultithread.html?threads=4)|
-|[Lego (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Lego.html) <br/> [Lego (4 threads !WARNING! High RAM usage!)](https://techlabsinc.github.io/MonteRay/Examples/Lego.html?threads=4) | ![Spheres rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Light_380spp.png) [Light (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Light.html) <br/> [Light (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Light.html?threads=4) | [Renderman Look Development Studio (single thread)](https://techlabsinc.github.io/MonteRay/Examples/Studio.html) <br/> [Renderman Look Development Studio (4 threads)](https://techlabsinc.github.io/MonteRay/Examples/Studio.html?threads=4)|
+|![Luxo Jr rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Luxo_f1_67spp.png) [Luxo Jr (single thread)](https://labrium.github.io/MonteRay/Examples/Luxo.html) <br/> [Luxo Jr (4 threads)](https://labrium.github.io/MonteRay/Examples/Luxo.html?threads=4) | [Lighting McQueen (single thread)](https://labrium.github.io/MonteRay/Examples/McQueen.html) <br/> [Lighting McQueen (4 threads)](https://labrium.github.io/MonteRay/Examples/McQueen.html?threads=4) | ![Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20CornellBox_1.png) [Cornell Box (single thread)](https://labrium.github.io/MonteRay/Examples/CornellBox.html) <br/> [Cornell Box (4 threads)](https://labrium.github.io/MonteRay/Examples/CornellBox.html?threads=4)|
+| [Textures (single thread)](https://labrium.github.io/MonteRay/Examples/Textures.html) <br/> [Textures (4 threads)](https://labrium.github.io/MonteRay/Examples/Textures.html?threads=4) | ![Environment maps in MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20HDRI%20Environment%20Map%20Demo_f1_102spp.png) [Environments (single thread)](https://labrium.github.io/MonteRay/Examples/HDRI.html) <br/> [Environments (4 threads)](https://labrium.github.io/MonteRay/Examples/HDRI.html?threads=4) | ![Classic Cornell Box rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Multithread%20Demo_f2_1205spp.png) [Classic Cornell Box (single thread)](https://labrium.github.io/MonteRay/Examples/CornellBoxClassicMultithread.html) <br/> [Classic Cornell Box (4 threads)](https://labrium.github.io/MonteRay/Examples/CornellBoxClassicMultithread.html?threads=4)|
+|[Lego (single thread)](https://labrium.github.io/MonteRay/Examples/Lego.html) <br/> [Lego (4 threads !WARNING! High RAM usage!)](https://labrium.github.io/MonteRay/Examples/Lego.html?threads=4) | ![Spheres rendered with MonteRay](Images/MonteRay%20-%20A%20Three.js%20pathtracing%20renderer%20-%20Light_380spp.png) [Light (single thread)](https://labrium.github.io/MonteRay/Examples/Light.html) <br/> [Light (4 threads)](https://labrium.github.io/MonteRay/Examples/Light.html?threads=4) | [Renderman Look Development Studio (single thread)](https://labrium.github.io/MonteRay/Examples/Studio.html) <br/> [Renderman Look Development Studio (4 threads)](https://labrium.github.io/MonteRay/Examples/Studio.html?threads=4)|
 
 
 &nbsp;
@@ -65,7 +65,7 @@ Make sure you include the following dependencies:
  - [three.js MeshSurfaceSampler](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/math/MeshSurfaceSampler.js)
  - [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh) **optional*
 
-Download the [latest build of the MonteRay Client](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRay.js), [the MonteRay Engine](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRayEngine.js), and optionally [the MonteRay Thread Client](https://raw.githubusercontent.com/TechLabsInc/MonteRay/master/Build/MonteRayThread.js), and include them as an HTML script:
+Download the [latest build of the MonteRay Client](https://raw.githubusercontent.com/Labrium/MonteRay/master/Build/MonteRay.js), [the MonteRay Engine](https://raw.githubusercontent.com/Labrium/MonteRay/master/Build/MonteRayEngine.js), and optionally [the MonteRay Thread Client](https://raw.githubusercontent.com/Labrium/MonteRay/master/Build/MonteRayThread.js), and include them as an HTML script:
 
 ```html
 <script src="MonteRayEngine.js"></script>
@@ -87,7 +87,7 @@ var renderer = new PathtracingRenderer(options);
 ```
 
 ## Renderer options
-see [API Reference](https://github.com/TechLabsInc/MonteRay/wiki/API-Reference)
+see [API Reference](https://github.com/Labrium/MonteRay/wiki/API-Reference)
 
 
 &nbsp;
@@ -132,7 +132,7 @@ In this project, I use a variety of methods to improve accuracy and speed of tra
 
 MonteRay divides the rendering process into two phases:
 
- 1. Pre-rendering 
+ 1. Pre-rendering
  2. Rendering
 
 ## Pre-rendering Phase
@@ -227,6 +227,6 @@ During the rendering phase MonteRay backward traces each path and averages the s
 &nbsp;
 
 # License
-[MonteRay](https://github.com/TechLabsInc/MonteRay) © 2021-2022 by [Tech Labs Inc.](https://github.com/TechLabsInc) is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0).
+[MonteRay](https://github.com/Labrium/MonteRay) © 2021-2022 by [Labrium](https://github.com/Labrium) is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0).
 
 [![licensebuttons by-nc-sa](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0)
